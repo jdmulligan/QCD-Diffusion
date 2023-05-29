@@ -2,7 +2,34 @@
 
 This is a workspace to implement ML-based jet studies.
 
-## Setup software environment – on hiccup cluster
+## Basic setup
+<details>
+  <summary>Click for details</summary>
+<br/> 
+  
+To begin, we need to set up a few things to be able to run our code and keep track of our changes with version control. Don't allow yourself to get stuck – if you are spending more than e.g. 10 minutes on a given step and are not sure what to do, ask one of us – don't hesitate.
+  
+We also encourage you to liberally use ChatGPT for software questions, both techincal (e.g. "How do I navigate to a certain directory on a linux terminal?", "I got this error after trying to do X: <paste error>") and conceptual ("Why do I want to use version control when writing code?", "What is a python virtual environment?"). 
+  
+To start, do the following:
+  - Create a [GitHub](https://github.com) account
+  - We will create an account for you on the `hiccup` cluster, a local computing cluster that we will use this summer. 
+    - Open a terminal on your laptop and try to login: `ssh <user>@hic.lbl.gov`
+      - Your home directory (`/home/<user>`) is where you can store your code
+      - The `/rstorage` directory should be used to store data that you generate from your analysis (e.g. ML training datasets)
+    - [generate an SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux) and upload it to your GitHub account
+    - Clone this repository: `git clone <url>`
+  - On your laptop, [download VSCode](https://code.visualstudio.com) 
+    - Install the `Remote-SSH` extension – this will allow you to easily edit code on hiccup via your laptop's editor
+    - Create a new workspace that ssh to hiccup, and add the folder for this repository to the workspace
+    - Now, try to open a file and check that you can edit it successfully (with the changes being reflected on hiccup)
+  
+Now we are ready to set up the specific environment for our analysis.
+
+   
+</details>
+
+## Setup software environment for our analysis – on hiccup cluster
 <details>
   <summary>Click for details</summary>
 <br/> 

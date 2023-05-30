@@ -87,15 +87,15 @@ The pipeline is steered by the script `steer_analysis.py`, where you can specify
 
 ### To generate events and write the output to file:
 ```
-python steer_analysis.py --generate --write
+python analysis/steer_analysis.py --generate --write
 ```
 
 ### To read events from file and do ML analysis:
 ```
-python steer_analysis.py --read /path/to/training_data.h5 --analyze
+python analysis/steer_analysis.py --read /path/to/training_data.h5 --analyze
 ```
 
 ### To generate events and do ML analysis ("on-the-fly"):
 ```
-python steer_analysis.py --generate --analyze
+python analysis/steer_analysis.py --generate --analyze
 ```

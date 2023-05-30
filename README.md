@@ -2,6 +2,10 @@
 
 This is a workspace to implement ML-based jet studies.
 
+For reference, our reading and exercise list is linked here:
+ - [Reading list](https://docs.google.com/document/d/1nDz0PvdvrQR79-z-nHU7dbMzTct1-O_NcjJzVuuaj5E/edit?usp=sharing)
+ - [Google drive](https://drive.google.com/drive/u/0/folders/1eoGmWkVxYjx8As7fMrWZZGoWCt5Qil5U)
+
 ## Basic setup
 <details>
   <summary>Click for details</summary>

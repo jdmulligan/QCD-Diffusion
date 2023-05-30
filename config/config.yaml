@@ -1,0 +1,18 @@
+# Config file used by steer_analysis.py
+
+#------------------------------------------------------------------
+# These parameters are used in the event generation and jet finding
+#------------------------------------------------------------------
+
+n_events: 1000
+n_particles_max_per_jet: 50
+jetR: 0.4
+
+#------------------------------------------------------------------
+# These parameters are used only in ML analysis
+#------------------------------------------------------------------
+
+# Size of labeled data to load
+n_train: 600
+n_val: 200
+n_test: 200

@@ -1,18 +1,27 @@
 #!/usr/bin/bash
 
-# Load heppy module (for jet finding, etc.)
-module use /software/users/james/heppy/modules
-module load /software/users/james/heppy/modules/heppy/1.0
-echo
-module list
+if lspci | grep -i 'nvidia' > /dev/null; then
 
-# Set up pyenv (for python version management)
-export PYENV_ROOT="/home/software/users/james/pyenv"
-export PYTHON_CONFIGURE_OPTS="--enable-shared"
-export PATH="${PATH}:${PYENV_ROOT}/bin"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-pyenv local 3.9.12
+    module use /software/users/diegohk/heppy/modules
+    module load heppy
+
+else
+
+    # Load heppy module (for jet finding, etc.)
+    module use /software/users/james/heppy/modules
+    module load /software/users/james/heppy/modules/heppy/1.0
+    echo
+    module list
+
+    # Set up pyenv (for python version management)
+    export PYENV_ROOT="/home/software/users/james/pyenv"
+    export PYTHON_CONFIGURE_OPTS="--enable-shared"
+    export PATH="${PATH}:${PYENV_ROOT}/bin"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    pyenv local 3.9.12
+
+fi
 
 # Get command line option to determine whether we need to install the virtual environment, or just enter it
 for i in "$@"; do

@@ -86,6 +86,13 @@ The data pipeline consists of the following steps:
 2. Load dataset and do ML analysis
 
 The pipeline is steered by the script `steer_analysis.py`, where you can specify which parts of the pipeline you want to run, along with a config file `config.yaml`.
+ 
+Remember that each time you logon, you will first need to initialize the python virtual environment:
+```
+[Open VSCode terminal, configured to logon to hiccupgpu]
+cd /path/to/ML_Jets_Summer2023
+source init.sh
+```
 
 ### To generate events and write the output to file:
 ```

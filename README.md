@@ -38,23 +38,21 @@ Now we are ready to set up the specific environment for our analysis.
   <summary>Click for details</summary>
 <br/> 
   
-### Logon and allocate a node
+### Logon to the hiccup GPU node
   
-Logon to hiccup:
+If you are using the terminal inside of VSCode, you can logon to the hiccupgpu node by install the "Remote-SSH" extension in VSCode and adding a new remote server:
 ```
-ssh <user>@hic.lbl.gov
+ Host hic.lbl.gov 
+ ...
+   Hostname hic.lbl.gov
+   User <usr>
+   Port 1142
 ```
-  
-This brings you to the "login" node – the entry point from which we can request to be allocated a "compute" node to run our code. 
-
-From the login node, we can request an interactive node from the slurm batch system:
-   ```
-   srun -N 1 -n 20 -t 24:00:00 -p std --pty bash
-   ``` 
-   which requests 1 full node (20 cores) for 2 hours in the `std` queue. You can choose the time and queue: you can use the `quick` partition for up to a 2 hour session, `std` for a 24 hour session, or `long` for a 72 hour session (but you may have to wait longer for the longer queues). 
-Depending how busy the squeue is, you may get the node instantly, or you may have to wait awhile.
-When you’re done with your session, just type `exit`.
-Please do not run anything but the lightest tests on the login node. If you are finding that you have to wait a long time, let us know and we can take a node out of the slurm queue and logon to it directly.
+ 
+Alternately, you can log directly onto the hiccup GPU node with:
+```
+ssh <user>@hic.lbl.gov -p 1142
+```
 
 ### Initialize environment
   

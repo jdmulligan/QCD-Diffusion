@@ -61,13 +61,13 @@ We have set up an initialization script to take care of this.
 The first time you set up, you can do:
 ```
 cd ML_Jets_Summer2023
-./init.sh --install
+source init.sh --install
 ```
   
 On subsequent times, you don't need to pass the `install` flag:
 ```
 cd ML_Jets_Summer2023
-./init.sh
+source init.sh
 ```
 
 Now we are ready to run our scripts.

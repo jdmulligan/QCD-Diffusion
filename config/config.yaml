@@ -4,7 +4,7 @@
 # These parameters are used in the event generation and jet finding
 #------------------------------------------------------------------
 
-n_events: 1000
+n_events: 1500000
 n_particles_max_per_jet: 50
 jetR: 0.4
 

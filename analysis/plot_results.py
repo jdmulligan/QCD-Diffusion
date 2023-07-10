@@ -44,7 +44,7 @@ def plot_results(config_file, output_dir, output_file):
     Plot_m = False
     Plot_jets = False
     Plot_num = False
-    Plot_z = False
+    Plot_z = True
     Plot_2d = True
     Flavor_plots = False
 
@@ -286,7 +286,6 @@ def plot_results(config_file, output_dir, output_file):
     if Plot_z:
     # Plot pt of jets
         num_events = results['jet_dR'].shape[0]
-        scale = 1/num_events
         z_list = []
         for j in range(num_events):
             jet_pt = results[f'jet__{jetR}__partonjet_pt'][:, 0].flatten()[j]
@@ -294,11 +293,32 @@ def plot_results(config_file, output_dir, output_file):
                 p_pt = results[f'jet__{jetR}__partonfour_vector'][j][p][0]
                 z_list.append(p_pt/jet_pt)
         x_list = [z_list]
-        bins = np.linspace(0, 1, 200)
-        plot_histogram_1d(x_list=x_list, label_list=['partons'],
-                        bins=bins, logy=True,
-                        xlabel='', ylabel='z = pt_particle/pt_jet',
-                        filename = f'jet_z{jetR}.pdf', output_dir=output_dir)
+        #num_events = results['jet_dR'].shape[0]
+
+        #jet_pt = results[f'jet__{jetR}__partonjet_pt'][:, 0].flatten()  # Array of jet pt values for all events
+
+        #p_pt = results[f'jet__{jetR}__partonfour_vector'][:, :, 0]  # Array of p_pt values for all events and particles
+
+        #z_list = (p_pt / jet_pt[:, np.newaxis]).flatten()  # Compute z values using broadcasting
+
+        #x_list = [z_list]
+
+# Create the histogram
+        hist, bins, _ = plt.hist(x_list, bins=30, density=False, alpha=0.5)
+
+# Define the scaling factor
+        scaling_factor = 1/num_events
+
+# Rescale the y-axis values
+        rescaled_hist = hist * scaling_factor
+
+# Plot the rescaled histogram
+        plt.bar(bins[:-1], rescaled_hist, width=np.diff(bins), alpha=0.5)
+
+# Set plot labels
+        plt.xlabel('z')
+        plt.ylabel('1/N_events * dN/dz')
+        plt.savefig(os.path.join(output_dir, 'z.pdf'))
         print('I saved z')
     if Plot_2d:
         # Generate random data
@@ -320,40 +340,40 @@ def plot_results(config_file, output_dir, output_file):
         plt.savefig(os.path.join(output_dir, '2d.pdf'))
 
                 # Split
-      #  quark_index = [i for i in range(results['jet_dR'].shape[0]) if results['leadingparticle_isquark'][i] ]
-       # gluon_index = [i for i in range(results['jet_dR'].shape[0]) if results['leadingparticle_isgluon'][i] ]
-     #   num_events = results['jet_dR'].shape[0]
-      #  x = np.array([results[f'jet__{jetR}__partonjet_m'][:, 0].flatten()[i] for i in quark_index])
-       # y = np.array([results[f'jet__{jetR}__partonnumparticlesperjet'][j][0] for j in quark_index])
+        quark_index = [i for i in range(results['jet_dR'].shape[0]) if results['leadingparticle_isquark'][i] ]
+        gluon_index = [i for i in range(results['jet_dR'].shape[0]) if results['leadingparticle_isgluon'][i] ]
+        num_events = results['jet_dR'].shape[0]
+        x = np.array([results[f'jet__{jetR}__partonjet_m'][:, 0].flatten()[i] for i in quark_index])
+        y = np.array([results[f'jet__{jetR}__partonnumparticlesperjet'][j][0] for j in quark_index])
 
 # Create the 2D histogram
-        #plt.hist2d(x, y, bins=30, cmap='Reds')
+        plt.hist2d(x, y, bins=30, cmap='Reds')
 
 # Add colorbar and labels
-        #plt.colorbar()
-        #plt.xlabel('Jet m')
-        #plt.ylabel('Jet constituents')
-        #plt.title('Quarks')
+        plt.colorbar()
+        plt.xlabel('Jet m')
+        plt.ylabel('Jet constituents')
+        plt.title('Quarks')
         #plt.xlim([-0.5, 15])
         #plt.ylim([-0.5, 15])
 # Display the plot
-        #plt.savefig(os.path.join(output_dir, '2dq.pdf'))
+        plt.savefig(os.path.join(output_dir, '2dq.pdf'))
         #Gluons
-        #x = np.array([results[f'jet__{jetR}__partonjet_m'][:, 0].flatten()[i] for i in gluon_index])
-        #y = np.array([results[f'jet__{jetR}__partonnumparticlesperjet'][j][0] for j in gluon_index])
+        x = np.array(results[f'jet__{jetR}__partonjet_m'][:, 0].flatten()[i] for i in gluon_index)
+        y = np.array(results[f'jet__{jetR}__partonnumparticlesperjet'][j][0] for j in gluon_index)
 
 # Create the 2D histogram
-        #plt.hist2d(x, y, bins=30, cmap='Greens')
+        plt.hist2d(x, y, bins=30, cmap='Greens')
 
 # Add colorbar and labels
-        #plt.colorbar()
-        #plt.xlabel('Jet m')
-        #plt.ylabel('Jet constituents')
-        #plt.title('Quarks')
+        plt.colorbar()
+        plt.xlabel('Jet m')
+        plt.ylabel('Jet constituents')
+        plt.title('Gluons')
         #plt.xlim([-0.5, 15])
         #plt.ylim([-0.5, 15])
 # Display the plot
-        #plt.savefig(os.path.join(output_dir, '2dg.pdf'))
+        plt.savefig(os.path.join(output_dir, '2dg.pdf'))
         
         print('I saved 2d')
     if Plot_dR:

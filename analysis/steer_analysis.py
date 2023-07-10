@@ -71,9 +71,10 @@ class SteerAnalysis(common_base.CommonBase):
                 # Analyze event -- compute observables and construct dictionary of output arrays for each event
                 event_output = analyzer.analyze_event(event)
                 event_output_list.append(event_output)
-
+            print('Succesfull events: ', len(event_output_list) )
             # Construct dictionary of ndarrays from list of event analysis output, and write them to hdf5 file
             results = data_IO.event_list_to_results_dict(event_output_list)
+            print(results.keys)
             if self.write:
                 data_IO.write_data(results, self.output_dir, filename=self.output_file)
 
@@ -89,7 +90,7 @@ class SteerAnalysis(common_base.CommonBase):
             # Run plotting script
             print()
             print('Run plotting script here...')
-            plot_results.plot_results(self.config_file, self.output_dir)
+            plot_results.plot_results(self.config_file, self.output_dir, self.output_file)
 
 ####################################################################################################################
 if __name__ == '__main__':
@@ -114,11 +115,11 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outputDir',
                         help='Output directory for output to be written to',
                         action='store', type=str,
-                        default='./TestOutput', )
+                        default='./Output', )
     parser.add_argument('-f', '--outputFile',
                         help='Output filename for hdf5',
                         action='store', type=str,
-                        default='training_data.h5', )
+                        default='goodmerged.h5', )
     args = parser.parse_args()
 
     print('Configuring...')

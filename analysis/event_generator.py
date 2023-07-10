@@ -13,6 +13,7 @@ import pythiafjext
 import pythiaext
 
 import common_base
+import random
 
 ####################################################################################################################
 class EventGenerator(common_base.CommonBase):
@@ -44,7 +45,8 @@ class EventGenerator(common_base.CommonBase):
                  f"Beams:eCM={mZ}", # LEP1 initialization at Z0 mass.
                  "HadronLevel:all=off", # parton level first
                  "PhaseSpace:bias2Selection=off", # this is ON by default in pyconf - not OK for these settings
-                 "Random:seed=0"] 
+                 "Random:setSeed=on",
+                 "Random:seed={}".format(random.randint(100000, 900000))] 
 
         self.pythia = pyconf.create_and_init_pythia(mycfg)
         if not self.pythia:
@@ -56,10 +58,10 @@ class EventGenerator(common_base.CommonBase):
     def __call__(self, n_events):
 
         # Print progress bar (after fj banner)
-        print()
+      #  print()
         fj.ClusterSequence.print_banner()
-        print()
-        print('Generating events...')
+       # print()
+       # print('Generating events...')
         pbar = tqdm.tqdm(range(n_events))
 
         # Event loop
@@ -97,7 +99,7 @@ class EventGenerator(common_base.CommonBase):
         parton_df = self.fill_particle_info(partons, is_parton=True)
         hadron_df = self.fill_particle_info(hadrons, is_parton=False)
         event_dataframe = pd.concat([parton_df, hadron_df], ignore_index=True)
-
+       # print()
         return event_dataframe
 
     #---------------------------------------------------------------

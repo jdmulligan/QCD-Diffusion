@@ -89,6 +89,9 @@ def center_and_scale(x, jetR):
 #Count
 light_q = [i for i in range(num_events) if Flavor(i)]
 other_q = [j for j in range(num_events) if (results['leadingparticle_isquark'][j] and (not Flavor(j)))]
+charm_q = [j for j in range(num_events) if (results['leadingparticle_id'][j] == 4 or results['leadingparticle_id'][j] == -4)]
+botom_q = [j for j in range(num_events) if (results['leadingparticle_id'][j] == 5 or results['leadingparticle_id'][j] == -5)]
+top_q = [j for j in range(num_events) if (results['leadingparticle_id'][j] == 6 or results['leadingparticle_id'][j] == -6)]
 matched =  [i for i in range(num_events) if Matched(i)]
 energy =  [i for i in range(num_events) if Energy(i)]
 num  = [i for i in range(num_events) if Num(i)]
@@ -98,6 +101,9 @@ print()
 print('Total number of quark events: ', len(quark_index))
 print('Number of light quark events (uds): ', len(light_q), 'which is ', len(light_q)/len(quark_index)*100 , '%')
 print('Number of heavy quark events: ', len(other_q), 'which is ', len(other_q)/len(quark_index)*100 , '%')
+print('Number of charm quark events: ', len(charm_q), 'which is ', len(charm_q)/len(other_q)*100 , '%', 'of the heavy quark events')
+print('Number of bottom quark events: ', len(botom_q), 'which is ', len(botom_q)/len(other_q)*100 , '%', 'of the heavy quark events')
+print('Number of top quark events: ', len(top_q), 'which is ', len(top_q)/len(other_q)*100 , '%', 'of the heavy quark events')
 print()
 print('The data with pt (parton)>= 35 Gev is: ', len(energy)/num_events*100 , '% ','of the total data')
 print()
@@ -105,15 +111,16 @@ print('The data with match angles (dR<R/2) is: ', len(matched)/num_events*100 , 
 print()
 print('The data with at least two particles (parton level) is: ', len(num)/num_events*100 , '% ','of the total data')
 
-for j in range(fresults['jet_dR'].shape[0]):
 
-    x_parton = fresults[f'jet__{jetR}__partonfour_vector'][j]
-    x_hadron = fresults[f'jet__{jetR}__hadronfour_vector'][j]
-    center_and_scale(x_parton,jetR)
-    center_and_scale(x_hadron,jetR)
+#for j in range(fresults['jet_dR'].shape[0]):
 
-print('I centered jets')
+ #   x_parton = fresults[f'jet__{jetR}__partonfour_vector'][j]
+  #  x_hadron = fresults[f'jet__{jetR}__hadronfour_vector'][j]
+   # center_and_scale(x_parton,jetR)
+    #center_and_scale(x_hadron,jetR)
+
+#print('I centered jets')
 #Save
-print(f'Writing results to {output_dir}/{filename}...')
-dicttoh5(fresults, os.path.join(output_dir, filename), overwrite_data=True)
-print('All done.')
+#print(f'Writing results to {output_dir}/{filename}...')
+#dicttoh5(fresults, os.path.join(output_dir, filename), overwrite_data=True)
+#print('All done.')

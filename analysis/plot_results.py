@@ -36,17 +36,18 @@ def plot_results(config_file, output_dir, output_file):
     jetR = config['jetR']
 
     #Choose Plot
-    Stat = False
+    Stat = True
     Split = False
-    Plot_dR = False
-    Plot_pt = False
-    Plot_phieta = False
-    Plot_m = False
-    Plot_jets = False
-    Plot_num = False
+    Plot_dR = True
+    Plot_pt = True
+    Plot_phieta = True
+    Plot_m = True
+    Plot_jets = True
+    Plot_num = True
     Plot_z = True
-    Plot_2d = True
+    Plot_2d = False
     Flavor_plots = False
+    Plot_esplits = False
 
     #Print statistics
     if Stat:
@@ -263,6 +264,8 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='pt,jet', ylabel='dN/dpt,jet',
                         filename = f'jet_pt_R{jetR}.pdf', output_dir=output_dir)
+        print('I saved pt')
+    if Plot_esplits:
        # Plot pt of jets split parton 
         x_list = [results_high[f'jet__{jetR}__partonjet_pt'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_pt'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_pt'][:, 0].flatten()]
    # print(type(x_list[0]))
@@ -279,7 +282,77 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='pt,jet', ylabel='dN/dpt,jet',
                         filename = f'jet_ptsplith_R{jetR}.pdf', output_dir=output_dir)
-        print('I saved all pt')
+           #Split dR
+        x_list = [results_high['jet_dR'],results_middle['jet_dR'],results_low['jet_dR']]
+        #print(type(x_list[0]))
+        bins = np.linspace(-1, 10, 200)
+        plot_histogram_1d(x_list=x_list, label_list=['High energy jets','Middle energy jets','Low energy jets'],
+                        bins=bins, logy=True,
+                        xlabel='dR_jet', ylabel='',
+                        filename = f'jet_dRsplit.pdf', output_dir=output_dir)
+        #Num part split
+        # Hadron
+        x_list = [results_high[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten() ]
+        bins = np.linspace(-5, 30, 35)
+        plot_histogram_1d(x_list=x_list, label_list=label_splith,
+                        bins=bins, logy=True,
+                        xlabel='numberofparticles,jet', ylabel='dN/dnumpart,jet',
+                        filename = f'numparticlesperjetsplith{jetR}.pdf', output_dir=output_dir)
+        # Parton
+        x_list = [results_high[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten(), results_low[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten() ]
+        bins = np.linspace(-5, 30, 35)
+        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
+                        bins=bins, logy=True,
+                        xlabel='numberofparticles,jet', ylabel='dN/dnumpart,jet',
+                        filename = f'numparticlesperjetsplitp{jetR}.pdf', output_dir=output_dir)
+        print('I saved esplit num')
+        #Splt eta phi
+            #Split hadrons
+        x_list = [results_high[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten()]
+        bins = np.linspace(-5, 7, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splith,
+                        bins=bins, logy=True,
+                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
+                        filename = f'jet_etasplith{jetR}.pdf', output_dir=output_dir)
+        #Split partons
+        x_list = [results_high[f'jet__{jetR}__partonjet_eta'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_eta'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_eta'][:, 0].flatten()]
+        bins = np.linspace(-5, 7, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
+                        bins=bins, logy=True,
+                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
+                        filename = f'jet_etasplitp{jetR}.pdf', output_dir=output_dir)
+                #Split hadrons
+        x_list = [results_high[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten()]
+        bins = np.linspace(-5, 7, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splith,
+                        bins=bins, logy=True,
+                        xlabel='jet_phi,jet', ylabel='dN/djet_phi,jet',
+                        filename = f'jet_phisplith{jetR}.pdf', output_dir=output_dir)
+        #Split partons
+        x_list = [results_high[f'jet__{jetR}__partonjet_phi'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_phi'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_phi'][:, 0].flatten()]
+        bins = np.linspace(-5, 7, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
+                        bins=bins, logy=True,
+                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
+                        filename = f'jet_phisplitp{jetR}.pdf', output_dir=output_dir)
+        print('I saved phieta')
+        #Split m
+          # Plot m split had
+        x_list = [results_high[f'jet__{jetR}__hadronjet_m'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_m'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_m'][:, 0].flatten()]
+        bins = np.linspace(-5, 15, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splith,
+                        bins=bins, logy=True,
+                        xlabel='jet_m,jet', ylabel='dN/djet_m,jet',
+                        filename = f'jet_msplith{jetR}.pdf', output_dir=output_dir)
+    #  # Plot m split parton
+        x_list = [results_high[f'jet__{jetR}__partonjet_m'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_m'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_m'][:, 0].flatten()]
+        bins = np.linspace(-5, 15, bbins)
+        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
+                        bins=bins, logy=True,
+                        xlabel='jet_m,jet', ylabel='dN/djet_m,jet',
+                        filename = f'jet_msplitp{jetR}.pdf', output_dir=output_dir)
+        print('I saved all m')
+    
     
     ##
 
@@ -385,14 +458,7 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='dR_jet', ylabel='',
                         filename = f'jet_dR.pdf', output_dir=output_dir)
-    #Split 
-        x_list = [results_high['jet_dR'],results_middle['jet_dR'],results_low['jet_dR']]
-    #print(type(x_list[0]))
-        bins = np.linspace(-1, 10, 200)
-        plot_histogram_1d(x_list=x_list, label_list=['High energy jets','Middle energy jets','Low energy jets'],
-                        bins=bins, logy=True,
-                        xlabel='dR_jet', ylabel='',
-                        filename = f'jet_dRsplit.pdf', output_dir=output_dir)
+
         print('I saved all dr')
     if Plot_num:
 
@@ -403,21 +469,7 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='numberofparticles,jet', ylabel='dN/dnumpart,jet',
                         filename = f'numparticlesperjet{jetR}.pdf', output_dir=output_dir)
-    # Hadron
-        x_list = [results_high[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronnumparticlesperjet'][:, 0].flatten() ]
-        bins = np.linspace(-5, 30, 35)
-        plot_histogram_1d(x_list=x_list, label_list=label_splith,
-                        bins=bins, logy=True,
-                        xlabel='numberofparticles,jet', ylabel='dN/dnumpart,jet',
-                        filename = f'numparticlesperjetsplith{jetR}.pdf', output_dir=output_dir)
-    # Parton
-        x_list = [results_high[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten(), results_low[f'jet__{jetR}__partonnumparticlesperjet'][:, 0].flatten() ]
-        bins = np.linspace(-5, 30, 35)
-        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
-                        bins=bins, logy=True,
-                        xlabel='numberofparticles,jet', ylabel='dN/dnumpart,jet',
-                        filename = f'numparticlesperjetsplitp{jetR}.pdf', output_dir=output_dir)
-        print('I saved all num')
+    
     if Plot_phieta:
      # Plot eta
         x_list = [results[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten(), results[f'jet__{jetR}__partonjet_eta'][:, 0].flatten()]
@@ -426,21 +478,7 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
                         filename = f'jet_eta{jetR}.pdf', output_dir=output_dir)
-    #Split hadrons
-        x_list = [results_high[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_eta'][:, 0].flatten()]
-        bins = np.linspace(-5, 7, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splith,
-                        bins=bins, logy=True,
-                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
-                        filename = f'jet_etasplith{jetR}.pdf', output_dir=output_dir)
-        #Split partons
-        x_list = [results_high[f'jet__{jetR}__partonjet_eta'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_eta'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_eta'][:, 0].flatten()]
-        bins = np.linspace(-5, 7, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
-                        bins=bins, logy=True,
-                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
-                        filename = f'jet_etasplitp{jetR}.pdf', output_dir=output_dir)
-    
+
     
      # Plot phi
         x_list = [results[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten(), results[f'jet__{jetR}__partonjet_phi'][:, 0].flatten()]
@@ -449,21 +487,7 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='jet_eta,jet', ylabel='dN/djet_phi,jet',
                         filename = f'jet_phi{jetR}.pdf', output_dir=output_dir)
-        #Split hadrons
-        x_list = [results_high[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_phi'][:, 0].flatten()]
-        bins = np.linspace(-5, 7, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splith,
-                        bins=bins, logy=True,
-                        xlabel='jet_phi,jet', ylabel='dN/djet_phi,jet',
-                        filename = f'jet_phisplith{jetR}.pdf', output_dir=output_dir)
-        #Split partons
-        x_list = [results_high[f'jet__{jetR}__partonjet_phi'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_phi'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_phi'][:, 0].flatten()]
-        bins = np.linspace(-5, 7, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
-                        bins=bins, logy=True,
-                        xlabel='jet_eta,jet', ylabel='dN/djet_eta,jet',
-                        filename = f'jet_phisplitp{jetR}.pdf', output_dir=output_dir)
-        print('I saved phieta')
+
     
     if Plot_m:
        # Plot m
@@ -473,21 +497,7 @@ def plot_results(config_file, output_dir, output_file):
                         bins=bins, logy=True,
                         xlabel='jet_m,jet', ylabel='dN/djet_m,jet',
                         filename = f'jet_m{jetR}.pdf', output_dir=output_dir)
-       # Plot m split had
-        x_list = [results_high[f'jet__{jetR}__hadronjet_m'][:, 0].flatten(), results_middle[f'jet__{jetR}__hadronjet_m'][:, 0].flatten(), results_low[f'jet__{jetR}__hadronjet_m'][:, 0].flatten()]
-        bins = np.linspace(-5, 15, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splith,
-                        bins=bins, logy=True,
-                        xlabel='jet_m,jet', ylabel='dN/djet_m,jet',
-                        filename = f'jet_msplith{jetR}.pdf', output_dir=output_dir)
-    #  # Plot m split parton
-        x_list = [results_high[f'jet__{jetR}__partonjet_m'][:, 0].flatten(), results_middle[f'jet__{jetR}__partonjet_m'][:, 0].flatten(), results_low[f'jet__{jetR}__partonjet_m'][:, 0].flatten()]
-        bins = np.linspace(-5, 15, bbins)
-        plot_histogram_1d(x_list=x_list, label_list=label_splitp,
-                        bins=bins, logy=True,
-                        xlabel='jet_m,jet', ylabel='dN/djet_m,jet',
-                        filename = f'jet_msplitp{jetR}.pdf', output_dir=output_dir)
-        print('I saved all m')
+     
     #
     # --------
     # Plot multiplicity of particles in jet
@@ -509,8 +519,8 @@ def plot_results(config_file, output_dir, output_file):
     # x_parton, x_hadron: 2D arrays representing four-vectors of a single jet, of shape (n_particles, 4) and the 4-vector is e.g. [pt,eta,phi,m]
             x_parton = results[f'jet__{jetR}__partonfour_vector'][i]
             x_hadron = results[f'jet__{jetR}__hadronfour_vector'][i]
-            center_and_scale(x_parton,jetR)
-            center_and_scale(x_hadron,jetR)
+           # center_and_scale(x_parton,jetR)
+            #center_and_scale(x_hadron,jetR)
         
             colors = ['blue', 'red']
             for i,ev in enumerate([x_hadron, x_parton]):

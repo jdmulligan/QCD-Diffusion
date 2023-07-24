@@ -7,8 +7,10 @@ import sys
 import yaml
 import numpy as np
 from collections import defaultdict
-
 import fastjet as fj
+import pythia8
+import pythiafjext
+import pythiaext
 import fjext
 
 import common_base
@@ -48,57 +50,116 @@ class EventAnalyzer(common_base.CommonBase):
 
         # Filter the event dataframe for hadrons (rather than partons)
         df_event_hadron = df_event[df_event['is_parton']==False]
-
-        # Do jet finding and compute some jet observables
-        self.analyze_jets(df_event_hadron)
-
+        df_event_parton = df_event[df_event['is_parton']==True]
+        # Do jet finding and compute observables
+        self.analyze_jets(df_event_hadron, df_event_parton)
         return self.event_output
     
     #---------------------------------------------------------------
     # Analyze jets -- find jets and compute observables
     #---------------------------------------------------------------
-    def analyze_jets(self, df_event):
+    def analyze_jets(self, df_event_hadron, df_event_parton):
 
-        # Convert four-vectors to fastjet::PseudoJets
-        fj_particles = self.get_fjparticles(df_event)
+    # Convert four-vectors to fastjet::PseudoJets
+        fj_particles_hadron = self.get_fjparticles(df_event_hadron)
+        fj_particles_parton = self.get_fjparticles(df_event_parton)
 
-        # Set jet definition and a jet selector
+    # Set jet definition and a jet selector
         jet_def = fj.JetDefinition(fj.antikt_algorithm, self.jetR)
 
-        # Do jet finding (hadron level)
-        jets = None
-        cs = fj.ClusterSequence(fj_particles, jet_def)
-        jets = fj.sorted_by_pt(cs.inclusive_jets())
+    # Do jet finding (hadron level)
+        jets_hadron = None
+        cs_hadron = fj.ClusterSequence(fj_particles_hadron, jet_def)
+        jets_hadron = fj.sorted_by_pt(cs_hadron.inclusive_jets())
 
-        # Let's get the leading jet (they are ordered by pt)
-        jet = jets[0]
-        
-        # Compute any information we want to save to file
-        self.compute_jet_observables(jet)
+    # Do jet finding (parton level)
+        jets_parton = None
+        cs_parton = fj.ClusterSequence(fj_particles_parton, jet_def)
+        jets_parton = fj.sorted_by_pt(cs_parton.inclusive_jets())
 
+    # Let's get the leading jet from hadron level (they are ordered by pt)
+        jet_hadron = jets_hadron[0]
+
+    # Let's get the leading jet from parton level (they are ordered by pt)
+        jet_parton = jets_parton[0]
+
+        #leading_particle = fj.sorted_by_pt(jet_parton.constituents())[0]
+       
+       # print('[i] leading particle index', leading_particle.user_index())
+        #print('    ', df_event_parton['particle_id'][leading_particle.user_index()])
+        #print('    ', df_event_parton['particle_pt'][leading_particle.user_index()], '=?=', leading_particle.perp())
+    #ID
+        self.Save_jetid(df_event_parton,jet_parton)
+    #Compute observables
+        self.compute_jet_observables(jet_hadron,'hadron')
+        self.compute_jet_observables(jet_parton,'parton')
+    #Save Alignment Check
+
+        self.Save_jetcheck(jet_hadron,jet_parton)
+
+    #Check alignment
+    def matcheck(self,jh,jp):
+        deta = jh.eta()-jp.eta()
+        x = jp.phi_02pi()
+        y = jh.phi_02pi()
+        dphi = min(np.abs(x-y),min(x,y)-max(x,y)+2*np.pi)
+        dR = np.sqrt(deta**2+dphi**2)
+        return dR
     #---------------------------------------------------------------
     # Compute observables for a given jet and store in output dict
     # Each observable should be stored as a numpy array in the output dict
     #---------------------------------------------------------------
-    def compute_jet_observables(self, jet):
+    def compute_jet_observables(self, jet, particle_type):
 
         # Define a convention for labeling the output observables
         key_prefix = f'jet__{self.jetR}__'
 
+        # observables
         # (1) Jet constituent four-vectors (zero-padded such that each jet has n_particles_max_per_jet)
         constituents = []
+        num_constituents = [0]
         for constituent in jet.constituents():
             constituents.append(np.array([constituent.pt(), constituent.eta(), constituent.phi_02pi(), constituent.m()])) 
+            # constituent_ids.append(pythiafjext.getPythia8Particle(constituent).id())
+            # print(constituent.user_index())
         constituents_zero_padded = self.zero_pad(np.array(constituents), self.n_particles_max_per_jet)
-        self.event_output[f'{key_prefix}four_vector'] = constituents_zero_padded
+        self.event_output[f'{key_prefix}{particle_type}four_vector'] = constituents_zero_padded
+       # for constituent in jet.constituents():
+        #    constituentid.append(np.array([pythiafjext.getPythia8Particle(constituent).id(), constituent.eta(), constituent.phi_02pi(), constituent.m()])) 
+        #constituents_zero_padded = self.zero_pad(np.array(constituents), self.n_particles_max_per_jet)
+        #self.event_output[f'{key_prefix}{particle_type}four_vector'] = constituents_zero_padded
 
+
+
+
+        for constituent in jet.constituents():
+            num_constituents[0] = num_constituents[0] +1
+        self.event_output[f'{key_prefix}{particle_type}numparticlesperjet'] = num_constituents
         # (2) Jet axis kinematics
-        self.event_output[f'{key_prefix}jet_pt'] = np.array([jet.pt()])
-        self.event_output[f'{key_prefix}jet_eta'] = np.array([jet.eta()])
-        self.event_output[f'{key_prefix}jet_phi'] = np.array([jet.phi_02pi()])
-        self.event_output[f'{key_prefix}jet_m'] = np.array([jet.m()])
+        self.event_output[f'{key_prefix}{particle_type}jet_pt'] = np.array([jet.pt()])
+        self.event_output[f'{key_prefix}{particle_type}jet_eta'] = np.array([jet.eta()])
+        self.event_output[f'{key_prefix}{particle_type}jet_phi'] = np.array([jet.phi_02pi()])
+        self.event_output[f'{key_prefix}{particle_type}jet_m'] = np.array([jet.m()])
+    
+        
+        
+        
+    def Save_jetcheck(self,jeth,jetp):
+        key_prefix = f'jet__{self.jetR}__'
+        self.event_output['jet_dR'] = self.matcheck(jeth,jetp)
+ 
+    def Save_jetid(self,dfp,jp):
+        key_prefix = 'leadingparticle'
+        leading_particle = fj.sorted_by_pt(jp.constituents())[0]
+        self.event_output[f'{key_prefix}_id'] = dfp['particle_id'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_pt'] = dfp['particle_pt'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_eta'] = dfp['particle_eta'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_phi'] = dfp['particle_phi'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_m'] = dfp['particle_m'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_isgluon'] = dfp['is_gluon'][leading_particle.user_index()]
+        self.event_output[f'{key_prefix}_isquark'] = dfp['is_quark'][leading_particle.user_index()]
 
-        # (3) ...
+
 
     #---------------------------------------------------------------
     # zero pad a 2D array of four-vectors
@@ -123,6 +184,8 @@ class EventAnalyzer(common_base.CommonBase):
         fj_particles = fjext.vectorize_pt_eta_phi_m(df_particles['particle_pt'].to_numpy(), 
                                                     df_particles['particle_eta'].to_numpy(),
                                                     df_particles['particle_phi'].to_numpy(), 
-                                                    df_particles['particle_m'], 
-                                                    user_index_offset)
+                                                    df_particles['particle_m'],user_index_offset)
+       
         return fj_particles
+    
+    

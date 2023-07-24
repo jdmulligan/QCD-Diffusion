@@ -61,7 +61,17 @@ class MLAnalysis(common_base.CommonBase):
 
         # Loop over jet radii
         print()
-        print('Implement ML analysis here...')
-        print()
-        print(f'The results dictionary contains the following keys: {results.keys()}')
-        print()
+       # print('Implement ML analysis here...')
+       # print()
+       # print(f'The results dictionary contains the following keys: {results.keys()}')
+       # for key in results.keys():
+       #     print(f'  {key}', type(results[key]),results[key].shape )
+        #    print()
+       # print('Leadingid',[results['leadingparticle_id'][i] for i in range(10)] )
+       # print('Is quark', [results['leadingparticle_isquark'][i] for i in range(10)])
+       # print( 'Is gluon', [results['leadingparticle_isgluon'][i] for i in range(10)] )
+       # print('leading pt')
+       # print([results['leadingparticle_pt'][i] for i in range(10)])
+       # print('parton jet pt')
+       # print([results['jet__0.4__partonjet_pt'][i] for i in range(10)])
+

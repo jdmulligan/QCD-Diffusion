@@ -3,11 +3,12 @@
 import yaml
 import os
 
-import common_base
+import torch
+
+from models import ddpm_jetimage
 import plot_results
 
-# Pytorch
-import torch
+import common_base
 
 ####################################################################################################################
 class MLAnalysis(common_base.CommonBase):
@@ -47,12 +48,11 @@ class MLAnalysis(common_base.CommonBase):
 
         self.n_events = config['n_events']
         self.jetR = config['jetR']
-        self.n_train = config['n_train']
-        self.n_val = config['n_val']
-        self.n_test = config['n_test']
-        self.n_total = self.n_train + self.n_val + self.n_test
-        self.test_frac = 1. * self.n_test / self.n_total
-        self.val_frac = 1. * self.n_val / (self.n_train + self.n_val)
+
+        self.models = config['models']
+        self.model_params = {}
+        for model in self.models:
+            self.model_params[model] = config[model]
 
     #---------------------------------------------------------------
     # Do ML analysis and run plotting script
@@ -75,3 +75,21 @@ class MLAnalysis(common_base.CommonBase):
        # print('parton jet pt')
        # print([results['jet__0.4__partonjet_pt'][i] for i in range(10)])
 
+        print()
+        print(f'The results dictionary contains the following keys: {results.keys()}')
+        print()
+
+        # Loop over architectures and train them
+        for model_name in self.models:
+            print(f'Training model {model_name}...')
+            print()
+
+            # Get model config params
+            model_params = self.model_params[model_name]
+
+            # Initialize model
+            if model_name == 'ddpm_jetimage':
+                ml_model = ddpm_jetimage.DDPM_JetImage(results, model_params, self.jetR, self.torch_device, self.output_dir)
+
+            # Train model
+            ml_model.train()

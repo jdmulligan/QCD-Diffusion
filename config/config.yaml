@@ -4,15 +4,25 @@
 # These parameters are used in the event generation and jet finding
 #------------------------------------------------------------------
 
-n_events: 200000
+n_events: 100000
 n_particles_max_per_jet: 50
-jetR: 0.4
+jetR: 0.8
+
+image_dims: [28]
 
 #------------------------------------------------------------------
 # These parameters are used only in ML analysis
 #------------------------------------------------------------------
 
-# Size of labeled data to load
-n_train: 600
-n_val: 200
-n_test: 200
+# Select model: ddpm_jetimage, ...
+models: [ddpm_jetimage]
+
+ddpm_jetimage:
+  # Network architecture parameters
+  image_dim: 28
+
+  # Network training parameters
+  n_train: 10000
+  n_epochs: 5
+  batch_size: 100
+  learning_rate: 0.001

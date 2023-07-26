@@ -119,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--outputFile',
                         help='Output filename for hdf5',
                         action='store', type=str,
-                        default='goodmerged.h5', )
+                        default='good_events_merged.h5', )
     args = parser.parse_args()
 
     print('Configuring...')

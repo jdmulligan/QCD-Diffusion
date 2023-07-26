@@ -39,6 +39,7 @@ class EventAnalyzer(common_base.CommonBase):
 
         self.jetR = config['jetR']
         self.n_particles_max_per_jet = config['n_particles_max_per_jet']
+        self.image_dims = config['image_dims']
 
     #---------------------------------------------------------------
     # Analyze event -- return a dictionary of numpy arrays
@@ -129,9 +130,6 @@ class EventAnalyzer(common_base.CommonBase):
         #constituents_zero_padded = self.zero_pad(np.array(constituents), self.n_particles_max_per_jet)
         #self.event_output[f'{key_prefix}{particle_type}four_vector'] = constituents_zero_padded
 
-
-
-
         for constituent in jet.constituents():
             num_constituents[0] = num_constituents[0] +1
         self.event_output[f'{key_prefix}{particle_type}numparticlesperjet'] = num_constituents
@@ -141,13 +139,20 @@ class EventAnalyzer(common_base.CommonBase):
         self.event_output[f'{key_prefix}{particle_type}jet_phi'] = np.array([jet.phi_02pi()])
         self.event_output[f'{key_prefix}{particle_type}jet_m'] = np.array([jet.m()])
     
-        
-        
-        
+        # (3) Store pixelized jet images
+        for image_dim in self.image_dims:
+            self.event_output[f'{key_prefix}{particle_type}__jet_image__{image_dim}'] = self.pixelize_jet(jet, image_dim)
+
+    #---------------------------------------------------------------
+    #
+    #---------------------------------------------------------------   
     def Save_jetcheck(self,jeth,jetp):
         key_prefix = f'jet__{self.jetR}__'
         self.event_output['jet_dR'] = self.matcheck(jeth,jetp)
  
+    #---------------------------------------------------------------
+    #
+    #---------------------------------------------------------------
     def Save_jetid(self,dfp,jp):
         key_prefix = 'leadingparticle'
         leading_particle = fj.sorted_by_pt(jp.constituents())[0]
@@ -159,7 +164,37 @@ class EventAnalyzer(common_base.CommonBase):
         self.event_output[f'{key_prefix}_isgluon'] = dfp['is_gluon'][leading_particle.user_index()]
         self.event_output[f'{key_prefix}_isquark'] = dfp['is_quark'][leading_particle.user_index()]
 
+    #---------------------------------------------------------------
+    # Create "image" with jet information representation of (centered) eta * phi with z as pixel intensity
+    #---------------------------------------------------------------
+    def pixelize_jet(self, jet, image_dim):
 
+        jet_pt = jet.pt() 
+        jet_eta = jet.eta()
+        jet_phi = jet.phi_02pi()
+
+        image = np.zeros((image_dim, image_dim))
+        edges = np.linspace(-self.jetR, self.jetR, image_dim+1)
+        for constituent in jet.constituents():
+            constituent_z = constituent.pt() / jet_pt
+            constituent_eta = constituent.eta()
+            constituent_phi = constituent.phi_02pi()
+
+            # Center jet
+            delta_eta = constituent_eta - jet_eta
+            delta_phi = constituent_phi - jet_phi
+            if delta_phi > np.pi:
+                delta_phi -= 2*np.pi
+            elif delta_phi < -np.pi:
+                delta_phi += 2*np.pi
+
+            # Convert to pixel coordinates
+            i_eta = np.digitize(delta_eta, edges) - 1
+            i_phi = np.digitize(delta_phi, edges) - 1
+            if i_eta < image_dim and i_phi < image_dim: # For simplicity, ignore particles with eta,phi outside R
+                image[i_eta, i_phi] += constituent_z
+            
+        return image
 
     #---------------------------------------------------------------
     # zero pad a 2D array of four-vectors

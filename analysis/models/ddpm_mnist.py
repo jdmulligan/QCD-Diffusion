@@ -544,6 +544,8 @@ else:
             # Algorithm 1 line 3: sample t uniformally for every example in the batch
             t = torch.randint(0, T, (batch_size,), device=device).long()
 
+            print(f'batch: {batch.shape}')
+            print(f't: {t.shape}')
             loss = p_losses(model, batch, t)
             training_loss.append(loss.cpu().detach().numpy().item())
 

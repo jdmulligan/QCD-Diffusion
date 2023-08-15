@@ -62,7 +62,7 @@ class SteerAnalysis(common_base.CommonBase):
         if self.generate:
 
             # Generate events
-            generator = event_generator.EventGenerator()
+            generator = event_generator.EventGenerator(self.config_file)
             analyzer = event_analyzer.EventAnalyzer(self.config_file)
 
             event_output_list = []

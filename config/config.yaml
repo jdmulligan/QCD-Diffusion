@@ -4,6 +4,11 @@
 # These parameters are used in the event generation and jet finding
 #------------------------------------------------------------------
 
+# Select outgoing hard parton type: 'b', 'uds'
+# We generate a single hard parton satisyfing this criteria, and then hadronize it n_events independent times
+# You can add additional criteria to the hard parton selection in the function event_generator.accept_event()
+parton_event_type: 'b' 
+
 n_events: 100000
 n_particles_max_per_jet: 50
 jetR: 0.8

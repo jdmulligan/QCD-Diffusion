@@ -1,15 +1,59 @@
-# ML Jets Summer2023
+# Conditional diffusion models for QCD confinement
 
-This is a workspace to implement ML-based jet studies.
+This repository contains a proof-of-concept study using conditional diffusion models to learn the mapping of partons to hadrons in quantum chromodynamics (QCD).
+Understanding this hadronization process is one of the biggest open questions in fundamental physics, since the confining interactions of QCD generate approximately 99% of the mass in the visible universe – and is key to the Clay Millenium Prize [Yang-Mills mass gap problem](https://www.claymath.org/millennium/yang-mills-the-maths-gap/).
+
+<div align="center">
+<img src="https://github.com/jdmulligan/QCD-Diffusion/assets/16219745/114be3cb-e2c1-476d-890d-e2128a2ae127" width="500" height="300">
+</div>  
+  
+We implement:
+- Generation of a simulated data set, consisting of paired images (partons, hadrons) where each pixel location represents an angular coordinate of a particle and the pixel intensity represents the energy of a particle.
+- Training of conditional diffusion models to learn the forward or inverse hadronization mapping.
+
+Using the [Shift-DDPM](https://arxiv.org/abs/2302.02373) implementation of conditional diffusion, we have been able to demonstrate a proof-of-concept that the ML model can successfully map different parton images to their corresponding hadron images. This result is highly nontrivial since the hadronization mapping is stochastic: the parton-to-hadron mapping is a one-to-many mapping. We show that, in our simplified setup, we can robustly invert any sampled hadron image into its single corresponding parton image, as shown below.
+![image](https://github.com/jdmulligan/QCD-Diffusion/assets/16219745/7810cb92-69f7-4b0e-a7b0-e8a289656663)
+
+
+## Running the analysis pipeline
+  
+The data pipeline consists of the following steps:
+1. Create dataset
+   - Generate PYTHIA events (simulated proton-proton collisions)
+   - Record relevant particle information from each event (e.g. jet reconstruction)
+2. Load dataset and do ML analysis
+
+The pipeline is steered by the script `steer_analysis.py`, where you can specify which parts of the pipeline you want to run, along with a config file `config.yaml`.
+ 
+Remember that you will first need to initialize the python virtual environment:
+```
+cd /path/to/QCD-Diffusion
+source init.sh
+```
+
+### To generate a simulated data set and write it to file:
+```
+python analysis/steer_analysis.py --generate --write
+```
+
+### To read a simulated data set from file and do ML analysis:
+```
+python analysis/steer_analysis.py --read /path/to/training_data.h5 --analyze
+```
+
+### To generate a simulated data set and do ML analysis ("on-the-fly"):
+```
+python analysis/steer_analysis.py --generate --analyze
+```
+
+## Setup instructions for students
+<details>
+  <summary>Click for details</summary>
+<br/> 
 
 For reference, our reading and exercise list is linked here:
  - [Reading list](https://docs.google.com/document/d/1nDz0PvdvrQR79-z-nHU7dbMzTct1-O_NcjJzVuuaj5E/edit?usp=sharing)
  - [Google drive](https://drive.google.com/drive/u/0/folders/1eoGmWkVxYjx8As7fMrWZZGoWCt5Qil5U)
-
-## Basic setup
-<details>
-  <summary>Click for details</summary>
-<br/> 
   
 To begin, we need to set up a few things to be able to run our code and keep track of our changes with version control. Don't allow yourself to get stuck – if you are spending more than e.g. 10 minutes on a given step and are not sure what to do, ask one of us – don't hesitate.
   
@@ -29,16 +73,8 @@ To start, do the following:
     - Now, try to open a file and check that you can edit it successfully (with the changes being reflected on hiccup)
   
 Now we are ready to set up the specific environment for our analysis.
-
-   
-</details>
-
-## Setup software environment for our analysis – on hiccup cluster
-<details>
-  <summary>Click for details</summary>
-<br/> 
   
-### Logon to the hiccup GPU node
+### Setup software environment for our analysis – on hiccup cluster
   
 If you are using the terminal inside of VSCode, you can logon to the hiccupgpu node by install the "Remote-SSH" extension in VSCode and adding a new remote server:
 ```
@@ -53,8 +89,6 @@ Alternately, you can log directly onto the hiccup GPU node with:
 ```
 ssh <user>@hic.lbl.gov -p 1142
 ```
-
-### Initialize environment
   
 Now we need to initialize the environment: load heppy (for Monte Carlo event generation and jet finding), set the python version, and create a virtual environment for python packages.
 We have set up an initialization script to take care of this. 
@@ -74,37 +108,3 @@ Now we are ready to run our scripts.
 
    
 </details>
-
-## Run the data pipeline
-  
-We have constructed a simple pipeline to generate and analyze datasets. The initial version is minimal in terms of physics – it contains only basic illustrative functions for each step, and is meant to be experimented with and added to.
-
-The data pipeline consists of the following steps:
-1. Create dataset
-   - Generate PYTHIA events (simulated proton-proton collisions)
-   - Record relevant particle information from each event (e.g. jet reconstruction)
-2. Load dataset and do ML analysis
-
-The pipeline is steered by the script `steer_analysis.py`, where you can specify which parts of the pipeline you want to run, along with a config file `config.yaml`.
- 
-Remember that each time you logon, you will first need to initialize the python virtual environment:
-```
-[Open VSCode terminal, configured to logon to hiccupgpu]
-cd /path/to/ML_Jets_Summer2023
-source init.sh
-```
-
-### To generate events and write the output to file:
-```
-python analysis/steer_analysis.py --generate --write
-```
-
-### To read events from file and do ML analysis:
-```
-python analysis/steer_analysis.py --read /path/to/training_data.h5 --analyze
-```
-
-### To generate events and do ML analysis ("on-the-fly"):
-```
-python analysis/steer_analysis.py --generate --analyze
-```

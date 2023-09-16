@@ -1,32 +1,23 @@
-import sys
-import os
-import yaml
-import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns
-sns.set_context('paper', rc={'font.size':18,'axes.titlesize':18,'axes.labelsize':18})
+'''
+Simple script to merge multiple output files into one
+'''
+
 import os
 import numpy as np
-from silx.io.dictdump import dicttoh5, h5todict
-from collections import defaultdict
+from silx.io.dictdump import dicttoh5
 import data_IO
 
-
-#---------------------------------------------------------------
-# Main processing function
-#---------------------------------------------------------------
 output_dir = 'Output'
 output_file = 'out_merged.h5'
 filename = 'goodmerged.h5'
 
-    # Load training data
+# Load training data
 training_data_path = os.path.join(output_dir, output_file)
 results = data_IO.read_data(training_data_path)
 print(type(results))
 print('The following observables are available to plot:')
 for key in results['output_file1'].keys():
     print(f'  {key}', type(results['output_file1'][key]), results['output_file1'][key].shape )
-   # print(results['output_file1'][key][0])
     print()
 
 mergeresults = {}
@@ -40,7 +31,6 @@ for skey in results['output_file1'].keys():
 
 for key in mergeresults.keys():
     print(f'  {key}', type(mergeresults[key]), mergeresults[key].shape )
-   # print(results['output_file1'][key][0])
 print()
     
 print(f'Writing results to {output_dir}/{filename}...')

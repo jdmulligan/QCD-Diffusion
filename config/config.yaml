@@ -4,16 +4,16 @@
 # These parameters are used in the event generation and jet finding
 #------------------------------------------------------------------
 
-# Select outgoing hard parton type: 'b', 'uds'
-# We generate a single hard parton satisyfing this criteria, and then hadronize it n_events independent times
+# Select outgoing hard parton types: 'b', 'uds'
+# For each, we generate a single hard parton satisyfing this criteria, and then hadronize it n_events independent times
 # You can add additional criteria to the hard parton selection in the function event_generator.accept_event()
-parton_event_type: 'b' 
+parton_event_types: ['b', 'uds']
 
-n_events: 100000
+n_events: 1000000
 n_particles_max_per_jet: 50
 jetR: 0.8
 
-image_dims: [28]
+image_dims: [16]
 
 #------------------------------------------------------------------
 # These parameters are used only in ML analysis
@@ -24,10 +24,12 @@ models: [ddpm_jetimage]
 
 ddpm_jetimage:
   # Network architecture parameters
-  image_dim: 28
+  image_dim: 16
+  hidden_dim: 64
 
   # Network training parameters
   n_train: 10000
   n_epochs: 5
-  batch_size: 100
-  learning_rate: 0.001
+  batch_size: 1000
+  learning_rate: 0.0001
+  threshold: 1.e-1

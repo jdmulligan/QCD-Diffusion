@@ -5,8 +5,7 @@ import os
 
 import torch
 
-from models import ddpm_jetimage
-import plot_results
+from models import ddpm_jetimage, shift_ddpm_jetimage
 
 import common_base
 
@@ -61,20 +60,6 @@ class MLAnalysis(common_base.CommonBase):
 
         # Loop over jet radii
         print()
-       # print('Implement ML analysis here...')
-       # print()
-       # print(f'The results dictionary contains the following keys: {results.keys()}')
-       # for key in results.keys():
-       #     print(f'  {key}', type(results[key]),results[key].shape )
-        #    print()
-       # print('Leadingid',[results['leadingparticle_id'][i] for i in range(10)] )
-       # print('Is quark', [results['leadingparticle_isquark'][i] for i in range(10)])
-       # print( 'Is gluon', [results['leadingparticle_isgluon'][i] for i in range(10)] )
-       # print('leading pt')
-       # print([results['leadingparticle_pt'][i] for i in range(10)])
-       # print('parton jet pt')
-       # print([results['jet__0.4__partonjet_pt'][i] for i in range(10)])
-
         print()
         print(f'The results dictionary contains the following keys: {results.keys()}')
         print()
@@ -90,6 +75,8 @@ class MLAnalysis(common_base.CommonBase):
             # Initialize model
             if model_name == 'ddpm_jetimage':
                 ml_model = ddpm_jetimage.DDPM_JetImage(results, model_params, self.jetR, self.torch_device, self.output_dir)
+            elif model_name == 'shift_ddpm_jetimage':
+                ml_model = shift_ddpm_jetimage.DDPM_JetImage(results, model_params, self.jetR, self.torch_device, self.output_dir)
 
             # Train model
             ml_model.train()

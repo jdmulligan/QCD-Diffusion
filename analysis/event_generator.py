@@ -42,7 +42,7 @@ class EventGenerator(common_base.CommonBase):
         with open(config_file, 'r') as stream:
             config = yaml.safe_load(stream)
 
-        self.parton_event_type = config['parton_event_type']
+        self.parton_event_types = config['parton_event_types']
 
     #---------------------------------------------------------------
     # Initialize pythia
@@ -76,41 +76,41 @@ class EventGenerator(common_base.CommonBase):
         pbar = tqdm.tqdm(range(n_events))
 
         # Event loop 
+        # For each parton event type:
         #   - Generate a single parton-level event
         #   - Decide whether to accept it -- if not, try a new one
         #   - Hadronize the parton-level event repeatedly for n_event times
-        accept_event = False
-        while not accept_event:
-        
-            # Get next event
-            if not self.pythia.next():
-                return
+        n_events_per_type = int(n_events / len(self.parton_event_types))
+        for parton_event_type in self.parton_event_types:
+            accept_event = False
+            while not accept_event:
+            
+                # Get next event
+                if not self.pythia.next():
+                    return
 
-            # Save the event, in case we want to hadronize the same parton-level even multiple times
-            saved_event = pythia8.Event(self.pythia.event)
+                # Save the event, in case we want to hadronize the same parton-level even multiple times
+                saved_event = pythia8.Event(self.pythia.event)
 
-            # Select partons
-            partons = pythiafjext.vectorize_select(self.pythia, [pythiafjext.kFinal], 0, True)
-            accept_event = self.accept_parton_level_event()
-            print(f'number of final-state partons in event: {len(partons)}')
-            print(f'accept_parton_level_event: {accept_event}')
-            print()
+                # Select partons
+                partons = pythiafjext.vectorize_select(self.pythia, [pythiafjext.kFinal], 0, True)
+                accept_event = self.accept_parton_level_event(parton_event_type)
 
-        # Loop through n_events, and independently hadronize the same parton-level event 
-        print(f'Found suitable parton-level event. Hadronizing {n_events} times...')
-        for i_event in range(n_events):
-            pbar.update()
+            # Loop through n_events, and independently hadronize the same parton-level event 
+            print(f'Found suitable parton-level event for type {parton_event_type}. Hadronizing {n_events_per_type} times...')
+            for i_event in range(n_events_per_type):
+                pbar.update()
 
-            yield self.next_event(i_event, saved_event, partons)
+                yield self.next_event(i_event, saved_event, partons)
 
-            # Print pythia stats for last event
-            if i_event == n_events-1:
-                self.pythia.stat()
+                # Print pythia stats for last event
+                if i_event == n_events-1:
+                    self.pythia.stat()
 
     #---------------------------------------------------------------
     # Generate an event
     #---------------------------------------------------------------
-    def accept_parton_level_event(self):
+    def accept_parton_level_event(self, parton_event_type):
 
         # Check the outgoing particles from the hard process
         # Z boson is status -22
@@ -119,19 +119,17 @@ class EventGenerator(common_base.CommonBase):
 
         # Get the PID of the outgoing hard particles
         outgoing_hard_particles = [np.abs(p.id()) for p in self.pythia.process if p.status() == 23]
-        print(f'outgoing_hard_particle IDs: {outgoing_hard_particles}')
         if len(outgoing_hard_particles) != 2:
             return False
 
-        # Let's select the quark-antiquark pairs, for either light quarks or b quarks
-        if self.parton_event_type == 'b':
+        if parton_event_type == 'b':
             reference_set = {5}
-        elif self.parton_event_type == 'uds':
+        elif parton_event_type == 'uds':
             reference_set =  {1,2,3}
         else:
             sys.exit("ERROR: parton_event_type must be b or uds")
 
-        return set(outgoing_hard_particles) == reference_set
+        return set(outgoing_hard_particles).issubset(reference_set)
 
     #---------------------------------------------------------------
     # Generate an event
@@ -140,9 +138,7 @@ class EventGenerator(common_base.CommonBase):
 
         # Hadronize the saved event
         self.pythia.event = saved_event
-        #print('preH:', saved_event.size(), self.pythia.event.size())
         hstatus = self.pythia.forceHadronLevel()
-        #print('postH:', saved_event.size(), self.pythia.event.size())
         if not hstatus:
             print(f'WARNING: forceHadronLevel false event: {i_event}')
             return

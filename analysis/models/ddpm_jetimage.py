@@ -18,7 +18,7 @@ import pickle
 import torch
 import torchvision
 
-from architectures import unet
+from analysis.architectures import unet_ddpm
 import plot_results
 
 import common_base
@@ -127,7 +127,7 @@ class DDPM_JetImage(common_base.CommonBase):
         print()
         print('------------------- Model -------------------')
         # Expects 4D tensor input: (batch, channels, height, width)
-        model = unet.Unet(
+        model = unet_ddpm.Unet(
             dim=self.image_dim,
             channels=1,
             dim_mults=(1, 2, 4,)

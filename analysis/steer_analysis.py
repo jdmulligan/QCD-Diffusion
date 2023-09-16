@@ -71,10 +71,10 @@ class SteerAnalysis(common_base.CommonBase):
                 # Analyze event -- compute observables and construct dictionary of output arrays for each event
                 event_output = analyzer.analyze_event(event)
                 event_output_list.append(event_output)
-            print('Succesfull events: ', len(event_output_list) )
+
             # Construct dictionary of ndarrays from list of event analysis output, and write them to hdf5 file
             results = data_IO.event_list_to_results_dict(event_output_list)
-            print(results.keys)
+
             if self.write:
                 data_IO.write_data(results, self.output_dir, filename=self.output_file)
 

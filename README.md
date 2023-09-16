@@ -8,7 +8,7 @@ Understanding this hadronization process is one of the biggest open questions in
 </div>  
   
 We implement:
-- Generation of a simulated data set, consisting of paired images (partons, hadrons) where each pixel location represents an angular coordinate of a particle and the pixel intensity represents the energy of a particle.
+- Generation of a data set of simulated high-energy electron-positron collisions, consisting of paired images (partons, hadrons) where each pixel location represents an angular coordinate of a particle and the pixel intensity represents the energy of a particle.
 - Training of conditional diffusion models to learn the forward or inverse hadronization mapping.
 
 Using the [Shift-DDPM](https://arxiv.org/abs/2302.02373) implementation of conditional diffusion, we have been able to demonstrate a proof-of-concept that the ML model can successfully map different parton images to their corresponding hadron images. This result is highly nontrivial since the hadronization mapping is stochastic: the parton-to-hadron mapping is a one-to-many mapping. We show that, in our simplified setup, we can robustly invert any sampled hadron image into its single corresponding parton image, as shown below.
@@ -19,17 +19,18 @@ Using the [Shift-DDPM](https://arxiv.org/abs/2302.02373) implementation of condi
   
 The data pipeline consists of the following steps:
 1. Create dataset
-   - Generate PYTHIA events (simulated proton-proton collisions)
-   - Record relevant particle information from each event (e.g. jet reconstruction)
-2. Load dataset and do ML analysis
+   - Generate simulated electron-positron collisions. This requires installation of our [heppy](https://github.com/matplo/heppy) package (available via docker image), which provides a python interface for PYTHIA physics simulations and reconstruction.
+   - Perform jet reconstruction and record relevant particle information from each event.
+2. Load dataset and do ML training and analysis
 
 The pipeline is steered by the script `steer_analysis.py`, where you can specify which parts of the pipeline you want to run, along with a config file `config.yaml`.
  
-Remember that you will first need to initialize the python virtual environment:
+Remember that you will first need to initialize the python virtual environment. An example of the required setup is:
 ```
 cd /path/to/QCD-Diffusion
-source init.sh
+source init.sh --install
 ```
+You may need to adapt this to your own system setup, for example utilizing the [heppy](https://github.com/matplo/heppy) docker image.
 
 ### To generate a simulated data set and write it to file:
 ```
@@ -57,7 +58,7 @@ For reference, our reading and exercise list is linked here:
   
 To begin, we need to set up a few things to be able to run our code and keep track of our changes with version control. Don't allow yourself to get stuck – if you are spending more than e.g. 10 minutes on a given step and are not sure what to do, ask one of us – don't hesitate.
   
-We also encourage you to liberally use ChatGPT for software questions, both techincal (e.g. "How do I navigate to a certain directory on a linux terminal?", "I got this error after trying to do X: <paste error>") and conceptual ("Why do I want to use version control when writing code?", "What is a python virtual environment?"). 
+We also encourage you to liberally use ChatGPT for software questions, both technical (e.g. "How do I navigate to a certain directory on a linux terminal?", "I got this error after trying to do X: <paste error>") and conceptual ("Why do I want to use version control when writing code?", "What is a python virtual environment?"). 
   
 To start, do the following:
   - Create a [GitHub](https://github.com) account
